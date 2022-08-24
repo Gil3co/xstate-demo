@@ -6,20 +6,20 @@ import charmeleon from "./assets/charmeleon.png";
 import charizard from "./assets/charizard.png";
 import "./App.css";
 
-const pokémonMap: Record<string, string> = {
-  charmander,
-  charizard,
-  charmeleon,
-};
-
 function App() {
   const [state, send] = useMachine(Charmachine);
 
   const currentPokémon =
     typeof state.value === "string" ? state.value : Object.keys(state.value)[0];
-  const { [currentPokémon]: currentPokémonImage } = pokémonMap;
+
   const isEvolvingToCharizard = state.matches("charizard.evolving");
-  const imageSizing = currentPokémon === "charizard" ? "350px" : "200px";
+  const imageSizing = state.matches("charizard.evolved") ? "350px" : "200px";
+  const currentPokémonImage = state.matches("charmander")
+    ? charmander
+    : state.matches("charmeleon") || isEvolvingToCharizard
+    ? charmeleon
+    : charizard;
+
   return (
     <div className="App">
       <img
