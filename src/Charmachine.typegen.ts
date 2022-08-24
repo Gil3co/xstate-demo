@@ -3,9 +3,20 @@
 export interface Typegen0 {
   "@@xstate/typegen": true;
   internalEvents: {
+    "done.invoke.megaEvolve": {
+      type: "done.invoke.megaEvolve";
+      data: unknown;
+      __tip: "See the XState TS docs to learn how to strongly type this.";
+    };
+    "error.platform.megaEvolve": {
+      type: "error.platform.megaEvolve";
+      data: unknown;
+    };
     "xstate.init": { type: "xstate.init" };
   };
-  invokeSrcNameMap: {};
+  invokeSrcNameMap: {
+    megaEvolve: "done.invoke.megaEvolve";
+  };
   missingImplementations: {
     actions: never;
     services: never;
@@ -13,7 +24,9 @@ export interface Typegen0 {
     delays: never;
   };
   eventsCausingActions: {};
-  eventsCausingServices: {};
+  eventsCausingServices: {
+    megaEvolve: "MEGA_EVOLVE";
+  };
   eventsCausingGuards: {};
   eventsCausingDelays: {};
   matchesStates:

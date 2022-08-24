@@ -15,11 +15,18 @@ const pokémonMap: Record<string, string> = {
 function App() {
   const [state, send] = useMachine(Charmachine);
 
-  const currentPokémon = state.value as string;
+  const currentPokémon =
+    typeof state.value === "string" ? state.value : Object.keys(state.value)[0];
   const { [currentPokémon]: currentPokémonImage } = pokémonMap;
+  const isEvolvingToCharizard = state.matches("charizard.evolving");
+  const imageSizing = currentPokémon === "charizard" ? "350px" : "200px";
   return (
     <div className="App">
-      <img src={currentPokémonImage} className="logo" />
+      <img
+        src={currentPokémonImage}
+        className="logo"
+        style={{ height: imageSizing, width: imageSizing }}
+      />
       <div
         className="card"
         style={{
@@ -29,18 +36,26 @@ function App() {
           gap: "20px",
         }}
       >
-        <button
-          onClick={() => {
-            send("EVOLVE");
-          }}
-          style={{
-            width: "fit-content",
-            background: "orange",
-            color: "yellow",
-          }}
-        >
-          Evolve!
-        </button>
+        {!state.matches("charizard.evolved") && (
+          <button
+            onClick={() => {
+              state.matches("charmander")
+                ? send("EVOLVE")
+                : send({
+                    type: "MEGA_EVOLVE",
+                    newStrength: Math.floor(Math.random() * 100),
+                  });
+            }}
+            disabled={state.matches("charizard.evolving")}
+            style={{
+              width: "fit-content",
+              background: "orange",
+              color: "yellow",
+            }}
+          >
+            {isEvolvingToCharizard ? "Evolving..." : "Evolve!"}
+          </button>
+        )}
         {`Your Pokémon's current state of evolution is ${
           currentPokémon[0].toUpperCase() + currentPokémon.substring(1)
         } and its strength is ${state.context.strength}`}
