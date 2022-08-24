@@ -9,17 +9,22 @@ import "./App.css";
 function App() {
   const [state, send] = useMachine(Charmachine);
 
-  const currentPokémon =
-    typeof state.value === "string" ? state.value : Object.keys(state.value)[0];
-
   const isEvolvingToCharizard = state.matches("charizard.evolving");
-  const imageSizing = state.matches("charizard.evolved") ? "350px" : "200px";
+  const hasEvolvedToCharizard = state.matches("charizard.evolved");
   const currentPokémonImage = state.matches("charmander")
     ? charmander
     : state.matches("charmeleon") || isEvolvingToCharizard
     ? charmeleon
     : charizard;
 
+  const currentPokémon = state.matches("charmander")
+    ? "Charmander"
+    : state.matches("charmeleon") || isEvolvingToCharizard
+    ? "Charmeleon"
+    : "Charizard";
+
+  const imageSizing = hasEvolvedToCharizard ? "350px" : "200px";
+  const buttonDisabled = isEvolvingToCharizard || hasEvolvedToCharizard;
   return (
     <div className="App">
       <img
@@ -36,7 +41,7 @@ function App() {
           gap: "20px",
         }}
       >
-        {!state.matches("charizard.evolved") && (
+        {
           <button
             onClick={() => {
               state.matches("charmander")
@@ -46,19 +51,22 @@ function App() {
                     newStrength: Math.floor(Math.random() * 100),
                   });
             }}
-            disabled={state.matches("charizard.evolving")}
+            disabled={buttonDisabled}
             style={{
               width: "fit-content",
               background: "orange",
               color: "yellow",
+              cursor: buttonDisabled ? "default" : "pointer",
             }}
           >
-            {isEvolvingToCharizard ? "Evolving..." : "Evolve!"}
+            {hasEvolvedToCharizard
+              ? "All evolved!"
+              : isEvolvingToCharizard
+              ? "Evolving..."
+              : "Evolve!"}
           </button>
-        )}
-        {`Your Pokémon's current state of evolution is ${
-          currentPokémon[0].toUpperCase() + currentPokémon.substring(1)
-        } and its strength is ${state.context.strength}`}
+        }
+        {`Your Pokémon's current state of evolution is ${currentPokémon} and its strength is ${state.context.strength}`}
       </div>
     </div>
   );
