@@ -1,32 +1,50 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
+import { useMachine } from "@xstate/react";
+
+import { Charmachine } from "./Charmachine";
+import charmander from "./assets/charmander.png";
+import charmeleon from "./assets/charmeleon.png";
+import charizard from "./assets/charizard.png";
 import "./App.css";
 
-function App() {
-  const [count, setCount] = useState(0);
+const pokémonMap: Record<string, string> = {
+  charmander,
+  charizard,
+  charmeleon,
+};
 
+function App() {
+  const [state, send] = useMachine(Charmachine);
+
+  const currentPokémon = state.value as string;
+  const { [currentPokémon]: currentPokémonImage } = pokémonMap;
   return (
     <div className="App">
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src="/vite.svg" className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://reactjs.org" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
+      <img src={currentPokémonImage} className="logo" />
+      <div
+        className="card"
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          gap: "20px",
+        }}
+      >
+        <button
+          onClick={() => {
+            send("EVOLVE");
+          }}
+          style={{
+            width: "fit-content",
+            background: "orange",
+            color: "yellow",
+          }}
+        >
+          Evolve!
         </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
+        {`Your Pokémon's current state of evolution is ${
+          currentPokémon[0].toUpperCase() + currentPokémon.substring(1)
+        } and its strength is ${state.context.strength}`}
       </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
     </div>
   );
 }
